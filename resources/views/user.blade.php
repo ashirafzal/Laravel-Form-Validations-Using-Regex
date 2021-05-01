@@ -1,5 +1,51 @@
 @extends('layouts.app')
 @section('content')
+<style>
+    ul,
+    #myUL {
+        list-style-type: none;
+    }
+
+    #myUL {
+        margin: 0;
+        padding: 0;
+    }
+
+    .caret {
+        cursor: pointer;
+        -webkit-user-select: none;
+        /* Safari 3.1+ */
+        -moz-user-select: none;
+        /* Firefox 2+ */
+        -ms-user-select: none;
+        /* IE 10+ */
+        user-select: none;
+    }
+
+    .caret::before {
+        content: "\25B6";
+        color: black;
+        display: inline-block;
+        margin-right: 6px;
+    }
+
+    .caret-down::before {
+        -ms-transform: rotate(90deg);
+        /* IE 9 */
+        -webkit-transform: rotate(90deg);
+        /* Safari */
+
+        transform: rotate(90deg);
+    }
+
+    .nested {
+        display: none;
+    }
+
+    .active {
+        display: block;
+    }
+</style>
 <div class="container">
     <div class="dashboard-content">
         <div class="row">
@@ -118,6 +164,65 @@
                 </tbody>
             </table>
         </div>
+        <br>
+        <div class="row">
+            <h2>
+                Posts and subpost related to the current user
+            </h2>
+        </div>
+        <br>
+        <div class="row border p-3">
+            <ul id="myUL">
+                @php($UserPost = Helper::getUserPosts())
+                @foreach($UserPost as $UserPosts)
+                @foreach($UserPosts->posts as $posts)
+                <li><span class="caret"><a href="#">{{$posts->title}}</a></span>
+                    <ul class="nested">
+                        @foreach($posts->subposts as $subposts)
+                        <li><span class="caret"><a href="#">{{ $subposts->title }}</a></span></li>
+                        @endforeach
+                    </ul>
+                </li>
+                @endforeach
+                @endforeach
+            </ul>
+        </div>
+        <br>
+        <div class="row">
+            <h2>
+                Sub post its parent post and its user
+            </h2>
+        </div>
+        <br>
+        <div class="row border p-3">
+            <ul id="myUL">
+                @php($subpost = Helper::getSubPostDetails())
+                @foreach($subpost as $subposts)
+                <li><span class="caret">{{ $subposts->title }}</span>
+                    @foreach($subposts->posts as $post)
+                    <ul class="nested">
+                        <li><span class="caret">{{ $posts->title }}</span>
+                            <ul class="nested">
+                                <li>{{ $posts->user->name }}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    @endforeach
+                </li>
+                @endforeach
+            </ul>
+        </div>
     </div>
 </div>
+<script>
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function() {
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+        });
+    }
+</script>
 @endsection

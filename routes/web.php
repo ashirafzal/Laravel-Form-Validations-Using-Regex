@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
     Route::get('post/{id}', '\App\Http\Controllers\WebsiteController@ViewPost');
 
     Route::get('user/{id}', '\App\Http\Controllers\WebsiteController@ViewUser');
+
+    Route::get('check', '\App\Http\Controllers\WebsiteController@check');
+
+    Route::get('check2', '\App\Http\Controllers\WebsiteController@check2');
 });
 
 Auth::routes();

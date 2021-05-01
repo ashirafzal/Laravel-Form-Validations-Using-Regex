@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\DemoUser;
 use App\Post;
+use App\SubPost;
+use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class WebsiteController extends Controller
@@ -286,5 +289,25 @@ class WebsiteController extends Controller
         $DemoUser->delete();
 
         return redirect()->back()->withSuccess('User has been deleted successfully.');
+    }
+
+    public function check()
+    {
+        $user = User::with(["posts" => function ($q) {
+            $q->with(["subposts" => function ($query) {
+                $query->where('check_box', true);
+            }])->where('user_id', '=', Auth::user()->id)
+                ->where('check_box', true);
+        }])->get();
+    }
+
+
+    public function check2()
+    {
+        $subpost = SubPost::with(['posts' => function ($q) {
+            $q->with('user');
+        }])
+            ->where('check_box', true)
+            ->get();
     }
 }
